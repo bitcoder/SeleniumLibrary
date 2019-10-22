@@ -15,15 +15,37 @@
 # limitations under the License.
 
 import os
+from os.path import basename
 
 from robot.utils import get_link_path
 
 from SeleniumLibrary.base import LibraryComponent, keyword
 from SeleniumLibrary.utils import is_noney
 from SeleniumLibrary.utils.path_formatter import _format_path
-
+import base64
 
 class ScreenshotKeywords(LibraryComponent):
+
+    @keyword
+    def set_embed_screenshots(self, embed_screenshots):
+        """Sets the directory for captured screenshots.
+
+        ``path`` argument specifies the absolute path to a directory where
+        the screenshots should be written to. If the directory does not
+        exist, it will be created. The directory can also be set when
+        `importing` the library. If it is not configured anywhere,
+        screenshots are saved to the same directory where Robot Framework's
+        log file is written.
+
+        The previous value is returned and can be used to restore
+        the original value later if needed.
+
+        Returning the previous value is new in SeleniumLibrary 3.0.
+        The persist argument was removed in SeleniumLibrary 3.2.
+        """
+        previous = self.ctx.embed_screenshots
+        self.ctx.embed_screenshots = path
+        return previous
 
     @keyword
     def set_screenshot_directory(self, path):
@@ -148,3 +170,8 @@ class ScreenshotKeywords(LibraryComponent):
         self.info('</td></tr><tr><td colspan="3">'
                   '<a href="{src}"><img src="{src}" width="{width}px"></a>'
                   .format(src=get_link_path(path, self.log_dir), width=width), html=True)
+        self.info('screenshots:{s}'.format(s=self.ctx.embed_screenshots))
+        if self.ctx.embed_screenshots:
+            data = open(path, "r").read()
+            self.info('<a href="{src}" download="{basename}"><img src="data:image/png;base64,{encodedfile}" width="{width}px"></a>'
+                      .format(src=get_link_path(path, self.log_dir), encodedfile=base64.b64encode(data), basename=basename(path), width=width), html=True)

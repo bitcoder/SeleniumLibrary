@@ -405,7 +405,7 @@ class SeleniumLibrary(DynamicCore):
 
     def __init__(self, timeout=5.0, implicit_wait=0.0,
                  run_on_failure='Capture Page Screenshot',
-                 screenshot_root_directory=None, plugins=None,
+                 screenshot_root_directory=None, embed_screenshots=False, plugins=None,
                  event_firing_webdriver=None):
         """SeleniumLibrary can be imported with several optional arguments.
 
@@ -431,6 +431,7 @@ class SeleniumLibrary(DynamicCore):
             = RunOnFailureKeywords.resolve_keyword(run_on_failure)
         self._running_on_failure_keyword = False
         self.screenshot_root_directory = screenshot_root_directory
+        self.embed_screenshots = embed_screenshots
         self._element_finder = ElementFinder(self)
         self._plugin_keywords = []
         libraries = [
